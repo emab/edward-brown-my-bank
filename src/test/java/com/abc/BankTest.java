@@ -1,54 +1,63 @@
 package com.abc;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
+
+/**
+ * @author Eddy Brown
+ * 
+ * Testing features related to the bank
+ *
+ */
 public class BankTest {
-    private static final double DOUBLE_DELTA = 1e-15;
 
-    @Test
-    public void customerSummary() {
+	/*
+	 * The manager should be able to get a summary if there are customers
+	 */
+	@Test
+    public void bank_manager_can_get_customer_summary() {
+		
+		// Given a bank
         Bank bank = new Bank();
-        Customer john = new Customer("John");
-        john.openAccount(new Account(Account.CHECKING));
-        bank.addCustomer(john);
+        
+        // And a customer that belongs to the bank with an account
+        Customer john = new Customer("John", bank);
+        john.openAccount(Account.CHECKING);
 
+        // The customer summary should display the information
         assertEquals("Customer Summary\n - John (1 account)", bank.customerSummary());
     }
-
+    
+	/*
+	 * The manager should get a special message if no customers are registered
+	 */
     @Test
-    public void checkingAccount() {
-        Bank bank = new Bank();
-        Account checkingAccount = new Account(Account.CHECKING);
-        Customer bill = new Customer("Bill").openAccount(checkingAccount);
-        bank.addCustomer(bill);
-
-        checkingAccount.deposit(100.0);
-
-        assertEquals(0.1, bank.totalInterestPaid(), DOUBLE_DELTA);
+    public void bank_manager_has_no_customers() {
+    	
+    	Bank bank = new Bank();
+    	assertEquals("You have no customers", bank.customerSummary());
     }
-
+    
+    /*
+     * If the bank has multiple customers and accounts they should display properly
+     */
     @Test
-    public void savings_account() {
-        Bank bank = new Bank();
-        Account checkingAccount = new Account(Account.SAVINGS);
-        bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
-
-        checkingAccount.deposit(1500.0);
-
-        assertEquals(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
-    }
-
-    @Test
-    public void maxi_savings_account() {
-        Bank bank = new Bank();
-        Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-        bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
-
-        checkingAccount.deposit(3000.0);
-
-        assertEquals(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+    public void bank_manager_can_get_multiple_customer_summary() {
+    	
+    	// A bank with two customers
+    	Bank bank = new Bank();
+    	Customer john = new Customer("John", bank);
+    	Customer bill = new Customer("Bill", bank);
+    	
+    	// And three accounts
+    	john.openAccount(Account.CHECKING);
+    	bill.openAccount(Account.CHECKING);
+    	bill.openAccount(Account.SAVINGS);
+    	
+    	// Check it is properly displayed
+    	assertEquals("Customer Summary\n - John (1 account)"
+    			+ "\n - Bill (2 accounts)", bank.customerSummary());
     }
 
 }
